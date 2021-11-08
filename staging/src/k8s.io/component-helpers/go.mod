@@ -18,4 +18,5 @@ replace (
 	k8s.io/apimachinery => ../apimachinery
 	k8s.io/client-go => ../client-go
 	k8s.io/component-helpers => ../component-helpers
+	k8s.io/gengo => k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027
 )

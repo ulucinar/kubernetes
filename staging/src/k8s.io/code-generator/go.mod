@@ -20,10 +20,13 @@ require (
 	golang.org/x/tools v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
-	k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027
+	k8s.io/gengo v0.0.0-20210813121822-485abfe95c7c
 	k8s.io/klog/v2 v2.9.0
-	k8s.io/kube-openapi v0.0.0-20210421082810-95288971da7e
+	k8s.io/kube-openapi v0.0.0-20211105084753-ee342a809c29
 	sigs.k8s.io/structured-merge-diff/v4 v4.1.2 // indirect
 )
 
-replace k8s.io/code-generator => ../code-generator
+replace (
+	k8s.io/code-generator => ../code-generator
+	k8s.io/gengo => k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027
+)

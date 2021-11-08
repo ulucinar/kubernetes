@@ -27,4 +27,5 @@ replace (
 	k8s.io/cloud-provider => ../cloud-provider
 	k8s.io/component-base => ../component-base
 	k8s.io/controller-manager => ../controller-manager
+	k8s.io/gengo => k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027
 )

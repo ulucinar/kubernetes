@@ -1982,7 +1982,7 @@ k8s.io/cri-api/pkg/apis/testing
 ## explicit
 k8s.io/csi-translation-lib
 k8s.io/csi-translation-lib/plugins
-# k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027 => k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027
+# k8s.io/gengo v0.0.0-20210813121822-485abfe95c7c => k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027
 ## explicit
 k8s.io/gengo/args
 k8s.io/gengo/examples/deepcopy-gen/generators
@@ -2029,7 +2029,7 @@ k8s.io/kube-aggregator/pkg/registry/apiservice/rest
 # k8s.io/kube-controller-manager v0.0.0 => ./staging/src/k8s.io/kube-controller-manager
 ## explicit
 k8s.io/kube-controller-manager/config/v1alpha1
-# k8s.io/kube-openapi v0.0.0-20210421082810-95288971da7e => k8s.io/kube-openapi v0.0.0-20210421082810-95288971da7e
+# k8s.io/kube-openapi v0.0.0-20211105084753-ee342a809c29 => k8s.io/kube-openapi v0.0.0-20211105084753-ee342a809c29
 ## explicit
 k8s.io/kube-openapi/cmd/openapi-gen
 k8s.io/kube-openapi/cmd/openapi-gen/args
@@ -2743,7 +2743,7 @@ sigs.k8s.io/yaml
 # k8s.io/klog/v2 => k8s.io/klog/v2 v2.9.0
 # k8s.io/kube-aggregator => ./staging/src/k8s.io/kube-aggregator
 # k8s.io/kube-controller-manager => ./staging/src/k8s.io/kube-controller-manager
-# k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20210421082810-95288971da7e
+# k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20211105084753-ee342a809c29
 # k8s.io/kube-proxy => ./staging/src/k8s.io/kube-proxy
 # k8s.io/kube-scheduler => ./staging/src/k8s.io/kube-scheduler
 # k8s.io/kubectl => ./staging/src/k8s.io/kubectl
