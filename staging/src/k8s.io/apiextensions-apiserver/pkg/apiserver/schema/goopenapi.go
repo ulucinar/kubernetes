@@ -17,7 +17,7 @@ limitations under the License.
 package schema
 
 import (
-	"github.com/go-openapi/spec"
+	"k8s.io/kube-openapi/pkg/validation/spec"
 )
 
 // ToGoOpenAPI converts a structural schema to go-openapi schema. It is faithful and roundtrippable.

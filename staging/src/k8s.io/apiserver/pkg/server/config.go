@@ -29,7 +29,6 @@ import (
 	"time"
 
 	jsonpatch "github.com/evanphx/json-patch"
-	"github.com/go-openapi/spec"
 	"github.com/google/uuid"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -71,6 +70,7 @@ import (
 	"k8s.io/klog/v2"
 	openapicommon "k8s.io/kube-openapi/pkg/common"
 	utilsnet "k8s.io/utils/net"
+	"k8s.io/kube-openapi/pkg/validation/spec"
 
 	// install apis
 	_ "k8s.io/apiserver/pkg/apis/apiserver/install"

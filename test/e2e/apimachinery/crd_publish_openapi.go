@@ -26,7 +26,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-openapi/spec"
 	"github.com/onsi/ginkgo"
 	openapiutil "k8s.io/kube-openapi/pkg/util"
 	kubeopenapispec "k8s.io/kube-openapi/pkg/validation/spec"
@@ -44,6 +43,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/kubernetes/test/e2e/framework"
 	"k8s.io/kubernetes/test/utils/crd"
+	"k8s.io/kube-openapi/pkg/validation/spec"
 )
 
 var (

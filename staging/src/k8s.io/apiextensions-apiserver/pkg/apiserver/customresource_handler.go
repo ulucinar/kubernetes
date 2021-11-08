@@ -26,7 +26,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	goopenapispec "github.com/go-openapi/spec"
 	"sigs.k8s.io/structured-merge-diff/v4/fieldpath"
 
 	apiextensionshelpers "k8s.io/apiextensions-apiserver/pkg/apihelpers"
@@ -88,6 +87,7 @@ import (
 	"k8s.io/kube-openapi/pkg/validation/spec"
 	"k8s.io/kube-openapi/pkg/validation/strfmt"
 	"k8s.io/kube-openapi/pkg/validation/validate"
+	goopenapispec "k8s.io/kube-openapi/pkg/validation/spec"
 )
 
 // crdHandler serves the `/apis` endpoint.

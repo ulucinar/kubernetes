@@ -26,7 +26,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-openapi/spec"
 	"github.com/google/uuid"
 
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -57,6 +56,7 @@ import (
 	"k8s.io/kubernetes/pkg/generated/openapi"
 	"k8s.io/kubernetes/pkg/kubeapiserver"
 	kubeletclient "k8s.io/kubernetes/pkg/kubelet/client"
+	"k8s.io/kube-openapi/pkg/validation/spec"
 )
 
 // Config is a struct of configuration directives for NewMasterComponents.

@@ -31,8 +31,9 @@ import (
 	"testing"
 	"time"
 
-	openapi "github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
+	kubeopenapi "k8s.io/kube-openapi/pkg/common"
+	openapi "k8s.io/kube-openapi/pkg/validation/spec"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -53,7 +54,6 @@ import (
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes/fake"
 	restclient "k8s.io/client-go/rest"
-	kubeopenapi "k8s.io/kube-openapi/pkg/common"
 )
 
 const (

@@ -31,8 +31,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-openapi/spec"
 	"sigs.k8s.io/yaml"
+
+	"k8s.io/kube-openapi/pkg/validation/spec"
 
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apiextensions-apiserver/pkg/apiserver/conversion"
