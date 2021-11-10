@@ -32,4 +32,5 @@ replace (
 	k8s.io/apimachinery => ../apimachinery
 	k8s.io/client-go => ../client-go
 	k8s.io/component-base => ../component-base
+	k8s.io/kube-openapi => github.com/ulucinar/kube-openapi v0.0.0-20211110012712-b647186562da
 )

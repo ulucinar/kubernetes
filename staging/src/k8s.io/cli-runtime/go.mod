@@ -18,7 +18,7 @@ require (
 	k8s.io/api v0.0.0
 	k8s.io/apimachinery v0.0.0
 	k8s.io/client-go v0.0.0
-	k8s.io/kube-openapi v0.0.0-20210305001622-591a79e4bda7
+	k8s.io/kube-openapi v0.0.0-20211110012712-b647186562da
 	sigs.k8s.io/kustomize/api v0.8.8
 	sigs.k8s.io/yaml v1.2.0
 )
@@ -28,4 +28,5 @@ replace (
 	k8s.io/apimachinery => ../apimachinery
 	k8s.io/cli-runtime => ../cli-runtime
 	k8s.io/client-go => ../client-go
+	k8s.io/kube-openapi => github.com/ulucinar/kube-openapi v0.0.0-20211110012712-b647186562da
 )

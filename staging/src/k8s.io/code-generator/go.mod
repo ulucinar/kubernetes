@@ -27,8 +27,11 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027
 	k8s.io/klog/v2 v2.9.0
-	k8s.io/kube-openapi v0.0.0-20210305001622-591a79e4bda7
+	k8s.io/kube-openapi v0.0.0-20211110012712-b647186562da
 	sigs.k8s.io/structured-merge-diff/v4 v4.1.2 // indirect
 )
 
-replace k8s.io/code-generator => ../code-generator
+replace (
+	k8s.io/code-generator => ../code-generator
+	k8s.io/kube-openapi => github.com/ulucinar/kube-openapi v0.0.0-20211110012712-b647186562da
+)
