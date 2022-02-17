@@ -34,6 +34,9 @@ import (
 	"time"
 
 	"golang.org/x/net/http2"
+	"k8s.io/klog/v2"
+	"k8s.io/utils/clock"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -44,8 +47,6 @@ import (
 	restclientwatch "k8s.io/client-go/rest/watch"
 	"k8s.io/client-go/tools/metrics"
 	"k8s.io/client-go/util/flowcontrol"
-	"k8s.io/klog/v2"
-	"k8s.io/utils/clock"
 )
 
 var (
@@ -590,17 +591,19 @@ func (r *Request) tryThrottleWithInfo(ctx context.Context, retryInfo string) err
 	case len(retryInfo) > 0:
 		message = fmt.Sprintf("Waited for %v, %s - request: %s:%s", latency, retryInfo, r.verb, r.URL().String())
 	default:
-		message = fmt.Sprintf("Waited for %v due to client-side throttling, not priority and fairness, request: %s:%s", latency, r.verb, r.URL().String())
+		message = fmt.Sprintf("Waited for due to client-side throttling, not priority and fairness, request: %v,%s,%s", latency.Milliseconds(), r.verb, r.URL().String())
 	}
 
-	if latency > longThrottleLatency {
+
+	klog.V(0).Info(message)
+/*	if latency > longThrottleLatency {
 		klog.V(3).Info(message)
-	}
-	if latency > extraLongThrottleLatency {
+	}*/
+/*	if latency > extraLongThrottleLatency {
 		// If the rate limiter latency is very high, the log message should be printed at a higher log level,
 		// but we use a throttled logger to prevent spamming.
 		globalThrottledLogger.Infof("%s", message)
-	}
+	}*/
 	metrics.RateLimiterLatency.Observe(ctx, r.verb, r.finalURLTemplate(), latency)
 
 	return err

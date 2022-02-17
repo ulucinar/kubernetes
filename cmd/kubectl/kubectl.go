@@ -23,6 +23,8 @@ import (
 
 	// Import to initialize client auth plugins.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
+
+	_ "k8s.io/component-base/metrics/prometheus/restclient" // for client-go metrics registration
 )
 
 func main() {

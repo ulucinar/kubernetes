@@ -27,10 +27,11 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"k8s.io/klog/v2"
+
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	cliflag "k8s.io/component-base/cli/flag"
-	"k8s.io/klog/v2"
 	"k8s.io/kubectl/pkg/cmd/annotate"
 	"k8s.io/kubectl/pkg/cmd/apiresources"
 	"k8s.io/kubectl/pkg/cmd/apply"
@@ -89,7 +90,7 @@ type KubectlOptions struct {
 	genericclioptions.IOStreams
 }
 
-var defaultConfigFlags = genericclioptions.NewConfigFlags(true).WithDeprecatedPasswordFlag().WithDiscoveryBurst(300).WithDiscoveryQPS(50.0)
+var defaultConfigFlags = genericclioptions.NewConfigFlags(true).WithDeprecatedPasswordFlag().WithDiscoveryBurst(100).WithDiscoveryQPS(50.0)
 
 // NewDefaultKubectlCommand creates the `kubectl` command with default arguments
 func NewDefaultKubectlCommand() *cobra.Command {
