@@ -34,6 +34,9 @@ import (
 	"time"
 
 	"golang.org/x/net/http2"
+	"k8s.io/klog/v2"
+	"k8s.io/utils/clock"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -44,8 +47,6 @@ import (
 	restclientwatch "k8s.io/client-go/rest/watch"
 	"k8s.io/client-go/tools/metrics"
 	"k8s.io/client-go/util/flowcontrol"
-	"k8s.io/klog/v2"
-	"k8s.io/utils/clock"
 )
 
 var (
@@ -575,6 +576,7 @@ func (r Request) finalURLTemplate() url.URL {
 }
 
 func (r *Request) tryThrottleWithInfo(ctx context.Context, retryInfo string) error {
+	return nil
 	if r.rateLimiter == nil {
 		return nil
 	}
@@ -590,17 +592,19 @@ func (r *Request) tryThrottleWithInfo(ctx context.Context, retryInfo string) err
 	case len(retryInfo) > 0:
 		message = fmt.Sprintf("Waited for %v, %s - request: %s:%s", latency, retryInfo, r.verb, r.URL().String())
 	default:
-		message = fmt.Sprintf("Waited for %v due to client-side throttling, not priority and fairness, request: %s:%s", latency, r.verb, r.URL().String())
+		message = fmt.Sprintf("Waited for due to client-side throttling, not priority and fairness, request ! %v,%s,%s", latency.Milliseconds(), r.verb, r.URL().String())
 	}
 
-	if latency > longThrottleLatency {
+	klog.V(0).Info(message)
+
+/*	if latency > longThrottleLatency {
 		klog.V(3).Info(message)
 	}
 	if latency > extraLongThrottleLatency {
 		// If the rate limiter latency is very high, the log message should be printed at a higher log level,
 		// but we use a throttled logger to prevent spamming.
 		globalThrottledLogger.Infof("%s", message)
-	}
+	}*/
 	metrics.RateLimiterLatency.Observe(ctx, r.verb, r.finalURLTemplate(), latency)
 
 	return err
@@ -721,7 +725,7 @@ func (r *Request) Watch(ctx context.Context) (watch.Interface, error) {
 		}
 
 		done, transformErr := func() (bool, error) {
-			defer readAndCloseResponseBody(resp)
+			defer readAndCloseResponseBody(resp, "")
 
 			var retry bool
 			retryAfter, retry = r.retry.NextRetry(req, resp, err, isErrRetryableFunc)
@@ -930,6 +934,7 @@ func (r *Request) request(ctx context.Context, fn func(*http.Request, *http.Resp
 	start := time.Now()
 	defer func() {
 		metrics.RequestLatency.Observe(ctx, r.verb, r.finalURLTemplate(), time.Since(start))
+		klog.V(0).Infof("It took %v to execute request for %s", time.Since(start), r.URL().String())
 	}()
 
 	if r.err != nil {
@@ -967,7 +972,7 @@ func (r *Request) request(ctx context.Context, fn func(*http.Request, *http.Resp
 			return err
 		}
 
-		r.backoff.Sleep(r.backoff.CalculateBackoff(r.URL()))
+		// r.backoff.Sleep(r.backoff.CalculateBackoff(r.URL()))
 		if retryAfter != nil {
 			// We are retrying the request that we already send to apiserver
 			// at least once before.
@@ -975,18 +980,22 @@ func (r *Request) request(ctx context.Context, fn func(*http.Request, *http.Resp
 			if err := r.tryThrottleWithInfo(ctx, retryAfter.Reason); err != nil {
 				return err
 			}
+			klog.V(0).Infof("retryAfter is not nil for %s: %v", r.URL().String(), retryAfter)
 			retryAfter = nil
 		}
+		t1 := time.Now()
 		resp, err := client.Do(req)
+		klog.V(0).Infof("It took %v to execute client.Do in request for %s", time.Since(t1), r.URL().String())
 		updateURLMetrics(ctx, r, resp, err)
 		if err != nil {
-			r.backoff.UpdateBackoff(r.URL(), err, 0)
+			klog.V(0).Infof("Err not nil in request for %s: %v", r.URL().String(), err)
+			// r.backoff.UpdateBackoff(r.URL(), err, 0)
 		} else {
-			r.backoff.UpdateBackoff(r.URL(), err, resp.StatusCode)
+			// r.backoff.UpdateBackoff(r.URL(), err, resp.StatusCode)
 		}
 
 		done := func() bool {
-			defer readAndCloseResponseBody(resp)
+			defer readAndCloseResponseBody(resp, r.URL().String())
 
 			// if the the server returns an error in err, the response will be nil.
 			f := func(req *http.Request, resp *http.Response) {
@@ -1011,6 +1020,7 @@ func (r *Request) request(ctx context.Context, fn func(*http.Request, *http.Resp
 				return false
 			})
 			if retry {
+				klog.V(0).Infof("Retry is true in request for %s", r.URL().String())
 				err := r.retry.BeforeNextRetry(ctx, r.backoff, retryAfter, req.URL.String(), r.body)
 				if err == nil {
 					return false
@@ -1062,6 +1072,10 @@ func (r *Request) DoRaw(ctx context.Context) ([]byte, error) {
 
 // transformResponse converts an API response into a structured API object
 func (r *Request) transformResponse(resp *http.Response, req *http.Request) Result {
+	now := time.Now()
+	defer func() {
+		klog.V(0).Infof("It took %v to execute transformResponse for %s", time.Since(now), req.URL.String())
+	}()
 	var body []byte
 	if resp.Body != nil {
 		data, err := ioutil.ReadAll(resp.Body)

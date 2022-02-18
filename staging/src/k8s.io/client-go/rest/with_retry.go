@@ -208,7 +208,11 @@ func getRetryReason(retries, seconds int, resp *http.Response, err error) string
 	}
 }
 
-func readAndCloseResponseBody(resp *http.Response) {
+func readAndCloseResponseBody(resp *http.Response, url string) {
+	now := time.Now()
+	defer func() {
+		klog.V(0).Infof("It took %v to execute readAndCloseResponseBody for %s", time.Since(now), url)
+	}()
 	if resp == nil {
 		return
 	}

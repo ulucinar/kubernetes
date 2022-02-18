@@ -30,6 +30,8 @@ import (
 	"strings"
 	"time"
 
+	"k8s.io/klog/v2"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -38,7 +40,6 @@ import (
 	"k8s.io/client-go/transport"
 	certutil "k8s.io/client-go/util/cert"
 	"k8s.io/client-go/util/flowcontrol"
-	"k8s.io/klog/v2"
 )
 
 const (
@@ -420,7 +421,7 @@ func UnversionedRESTClientForConfigAndClient(config *Config, httpClient *http.Cl
 	if rateLimiter == nil {
 		qps := config.QPS
 		if config.QPS == 0.0 {
-			qps = DefaultQPS
+			qps = float32(50.0)
 		}
 		burst := config.Burst
 		if config.Burst == 0 {

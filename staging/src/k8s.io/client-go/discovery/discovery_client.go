@@ -30,6 +30,7 @@ import (
 	//nolint:staticcheck // SA1019 Keep using module since it's still being maintained and the api of google.golang.org/protobuf/proto differs
 	"github.com/golang/protobuf/proto"
 	openapi_v2 "github.com/googleapis/gnostic/openapiv2"
+	"k8s.io/klog/v2"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -187,6 +188,7 @@ func (d *DiscoveryClient) ServerGroups() (apiGroupList *metav1.APIGroupList, err
 
 // ServerResourcesForGroupVersion returns the supported resources for a group and version.
 func (d *DiscoveryClient) ServerResourcesForGroupVersion(groupVersion string) (resources *metav1.APIResourceList, err error) {
+	now := time.Now()
 	url := url.URL{}
 	if len(groupVersion) == 0 {
 		return nil, fmt.Errorf("groupVersion shouldn't be empty")
@@ -199,7 +201,11 @@ func (d *DiscoveryClient) ServerResourcesForGroupVersion(groupVersion string) (r
 	resources = &metav1.APIResourceList{
 		GroupVersion: groupVersion,
 	}
-	err = d.restClient.Get().AbsPath(url.String()).Do(context.TODO()).Into(resources)
+	r := d.restClient.Get().AbsPath(url.String()).Do(context.TODO())
+	err = r.Into(resources)
+
+	klog.V(0).Infof("It took %v to execute ServerResourcesForGroupVersion for %s: %v", time.Since(now), groupVersion, err)
+
 	if err != nil {
 		// ignore 403 or 404 error to be compatible with an v1.0 server.
 		if groupVersion == "v1" && (errors.IsNotFound(err) || errors.IsForbidden(err)) {
@@ -255,6 +261,7 @@ func ServerResources(d DiscoveryInterface) ([]*metav1.APIResourceList, error) {
 }
 
 func ServerGroupsAndResources(d DiscoveryInterface) ([]*metav1.APIGroup, []*metav1.APIResourceList, error) {
+	// now := time.Now()
 	sgs, err := d.ServerGroups()
 	if sgs == nil {
 		return nil, nil, err
@@ -276,6 +283,8 @@ func ServerGroupsAndResources(d DiscoveryInterface) ([]*metav1.APIGroup, []*meta
 			}
 		}
 	}
+
+	// klog.V(0).Infof("It took %v to execute ServerGroupsAndResources: ", time.Since(now))
 
 	if len(failedGroups) == 0 {
 		return resultGroups, result, nil
@@ -347,6 +356,7 @@ func ServerPreferredResources(d DiscoveryInterface) ([]*metav1.APIResourceList, 
 
 // fetchServerResourcesForGroupVersions uses the discovery client to fetch the resources for the specified groups in parallel.
 func fetchGroupVersionResources(d DiscoveryInterface, apiGroups *metav1.APIGroupList) (map[schema.GroupVersion]*metav1.APIResourceList, map[schema.GroupVersion]error) {
+	// now := time.Now()
 	groupVersionResources := make(map[schema.GroupVersion]*metav1.APIResourceList)
 	failedGroups := make(map[schema.GroupVersion]error)
 
@@ -357,6 +367,7 @@ func fetchGroupVersionResources(d DiscoveryInterface, apiGroups *metav1.APIGroup
 			groupVersion := schema.GroupVersion{Group: apiGroup.Name, Version: version.Version}
 			wg.Add(1)
 			go func() {
+				// now2 := time.Now()
 				defer wg.Done()
 				defer utilruntime.HandleCrash()
 
@@ -374,10 +385,13 @@ func fetchGroupVersionResources(d DiscoveryInterface, apiGroups *metav1.APIGroup
 					// even in case of error, some fallback might have been returned
 					groupVersionResources[groupVersion] = apiResourceList
 				}
+				// klog.V(0).Infof("It took %v to fetch resources for %s: ", time.Since(now2), groupVersion.String())
 			}()
 		}
 	}
 	wg.Wait()
+
+	// klog.V(0).Infof("It took %v to execute fetchGroupVersionResources: ", time.Since(now))
 
 	return groupVersionResources, failedGroups
 }

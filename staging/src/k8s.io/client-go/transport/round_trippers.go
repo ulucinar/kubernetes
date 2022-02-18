@@ -27,8 +27,9 @@ import (
 
 	"golang.org/x/oauth2"
 
-	utilnet "k8s.io/apimachinery/pkg/util/net"
 	"k8s.io/klog/v2"
+
+	utilnet "k8s.io/apimachinery/pkg/util/net"
 )
 
 // HTTPWrappersForConfig wraps a round tripper with any relevant layered
@@ -567,6 +568,7 @@ func (rt *debuggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, e
 			stats += fmt.Sprintf(` ServerProcessing %d ms`, reqInfo.ServerProcessing.Nanoseconds()/int64(time.Millisecond))
 		}
 		stats += fmt.Sprintf(` Duration %d ms`, reqInfo.Duration.Nanoseconds()/int64(time.Millisecond))
+		stats += fmt.Sprintf(` URL: %s`, req.URL.String())
 		klog.Infof("HTTP Statistics: %s", stats)
 	}
 
