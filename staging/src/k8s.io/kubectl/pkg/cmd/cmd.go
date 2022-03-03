@@ -27,10 +27,11 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"k8s.io/klog/v2"
+
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	cliflag "k8s.io/component-base/cli/flag"
-	"k8s.io/klog/v2"
 	"k8s.io/kubectl/pkg/cmd/annotate"
 	"k8s.io/kubectl/pkg/cmd/apiresources"
 	"k8s.io/kubectl/pkg/cmd/apply"
@@ -89,7 +90,7 @@ type KubectlOptions struct {
 	genericclioptions.IOStreams
 }
 
-var defaultConfigFlags = genericclioptions.NewConfigFlags(true).WithDeprecatedPasswordFlag().WithDiscoveryBurst(300).WithDiscoveryQPS(50.0)
+var defaultConfigFlags = genericclioptions.NewConfigFlags(true).WithDeprecatedPasswordFlag()
 
 // NewDefaultKubectlCommand creates the `kubectl` command with default arguments
 func NewDefaultKubectlCommand() *cobra.Command {
@@ -250,6 +251,8 @@ func HandlePluginCommand(pluginHandler PluginHandler, cmdArgs []string) error {
 func NewKubectlCommand(o KubectlOptions) *cobra.Command {
 	warningHandler := rest.NewWarningWriter(o.IOStreams.ErrOut, rest.WarningWriterOptions{Deduplicate: true, Color: term.AllowsColorOutput(o.IOStreams.ErrOut)})
 	warningsAsErrors := false
+	discoveryBurstSize := 300
+	discoveryQPS := float32(50.0)
 	// Parent command to which all subcommands are added.
 	cmds := &cobra.Command{
 		Use:   "kubectl",
@@ -263,6 +266,7 @@ func NewKubectlCommand(o KubectlOptions) *cobra.Command {
 		// Hook before and after Run initialize and write profiles to disk,
 		// respectively.
 		PersistentPreRunE: func(*cobra.Command, []string) error {
+			o.ConfigFlags.WithDiscoveryBurst(discoveryBurstSize).WithDiscoveryQPS(discoveryQPS)
 			rest.SetDefaultWarningHandler(warningHandler)
 			return initProfiling()
 		},
@@ -293,6 +297,8 @@ func NewKubectlCommand(o KubectlOptions) *cobra.Command {
 	addProfilingFlags(flags)
 
 	flags.BoolVar(&warningsAsErrors, "warnings-as-errors", warningsAsErrors, "Treat warnings received from the server as errors and exit with a non-zero exit code")
+	flags.IntVar(&discoveryBurstSize, "discovery-burst", discoveryBurstSize, "Discovery client's tbrl burst size")
+	flags.Float32Var(&discoveryQPS, "discovery-avg-rate", discoveryQPS, "Discovery client's tbrl average rate. Set to a negative value to disable tbrl for the discovery client.")
 
 	kubeConfigFlags := o.ConfigFlags
 	if kubeConfigFlags == nil {
